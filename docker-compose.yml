@@ -1,0 +1,28 @@
+version: '3'
+services:
+  db:
+    image: postgres:alpine
+    restart: always
+    volumes:
+      - ./.persistence/db:/var/lib/postgresql/data
+    environment:
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_USERNAME: postgres
+      POSTGRES_DB: db_inventory
+    ports:
+      - 15432:5432
+  inventory:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - 9003:9003
+    restart: always
+    depends_on:
+      - db
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/db_inventory
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: postgres    
+      SPRING_JPA_HIBERNATE_DDL-AUTO: update
+    #command: rake db:migrate
