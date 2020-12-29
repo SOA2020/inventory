@@ -1,10 +1,9 @@
 version: '3'
 services:
-  db:
+  inventory_db:
     image: postgres:alpine
-    restart: always
     volumes:
-      - ./.persistence/db:/var/lib/postgresql/data
+      - ./.persistence/inventory_db:/var/lib/postgresql/data
     environment:
       POSTGRES_PASSWORD: postgres
       POSTGRES_USERNAME: postgres
@@ -12,18 +11,14 @@ services:
     ports:
       - 15432:5432
   inventory:
-    build:
-      context: .
-      dockerfile: Dockerfile
+    build: .
     ports:
       - 9003:9003
-    restart: always
     depends_on:
-      - db
+      - inventory_db
     environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/db_inventory
+      SPRING_DATASOURCE_URL: jdbc:postgresql://inventory_db:5432/db_inventory
       SPRING_DATASOURCE_USERNAME: postgres
-      SPRING_DATASOURCE_PASSWORD: postgres    
+      SPRING_DATASOURCE_PASSWORD: postgres
       SPRING_JPA_HIBERNATE_DDL-AUTO: update
       SERVER_PORT: 9003
-    #command: rake db:migrate

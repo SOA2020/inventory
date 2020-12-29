@@ -18,7 +18,6 @@ import java.util.HashMap;
  * author: fourwood
  */
 @RestController
-@RequestMapping(value = "api/inventory")
 public class CommodityController {
     @Autowired
     private CommodityRepository commodityRepository;
