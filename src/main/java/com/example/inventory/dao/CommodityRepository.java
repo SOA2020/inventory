@@ -13,7 +13,7 @@ import java.util.List;
  * author: fourwood
  */
 public interface CommodityRepository extends CrudRepository<Commodity, Long> {
-    Commodity findById(long commodity_id);
+    Commodity findById(long commodityId);
 
     ArrayList<Commodity> findByCommodityType(CommodityType commodityType);
 }
