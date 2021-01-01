@@ -1,5 +1,6 @@
 package com.example.inventory.controllers;
 
+import com.example.inventory.service.CommodityService;
 import com.example.inventory.bean.Commodity;
 import com.example.inventory.bean.CommodityType;
 import com.example.inventory.dao.CommodityRepository;
@@ -21,6 +22,9 @@ import java.util.HashMap;
 public class CommodityController {
     @Autowired
     private CommodityRepository commodityRepository;
+
+    @Autowired
+    private CommodityService commodityService;
     public static final int PG_SIZE = 10;
 
     @RequestMapping(value = "/commodity", method = RequestMethod.GET)
@@ -111,5 +115,10 @@ public class CommodityController {
         commodity.setCommodity(name, price, color, image, spec, inventory, CommodityType.values()[type], intro);
         commodity = commodityRepository.save(commodity);
         return new ResponseEntity<>(commodity, HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/commodity/{commodityId}/number", method = RequestMethod.PUT)
+    public ResponseEntity addNumber(@RequestParam Integer num, @PathVariable long commodityId) throws InterruptedException {
+        return commodityService.addNumber(commodityId, num);
     }
 }
