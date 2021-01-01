@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.HashMap;
 
@@ -120,5 +121,24 @@ public class CommodityController {
     @RequestMapping(value = "/commodity/{commodityId}/number", method = RequestMethod.PUT)
     public ResponseEntity addNumber(@RequestParam Integer num, @PathVariable long commodityId) throws InterruptedException {
         return commodityService.addNumber(commodityId, num);
+    }
+
+    @RequestMapping(value = "/commodity/search", method = RequestMethod.POST)
+    public ResponseEntity search(@RequestBody HashMap<String, ArrayList<String>> body){
+        ArrayList<String> keyWords = body.getOrDefault("keyWords", null);
+        if(keyWords == null) {
+            return new ResponseEntity<>("Bad Request", HttpStatus.BAD_REQUEST);
+        }
+        HashMap<Long, Commodity> commodities = new HashMap<>();
+        for(String keyWord : keyWords){
+            ArrayList<Commodity> commodityArrayList = commodityRepository.findByIntroductionContaining(keyWord);
+            for(Commodity commodity : commodityArrayList){
+                commodities.put(commodity.getCommodityId(), commodity);
+            }
+        }
+
+        HashMap<String, Object> response = new HashMap<String, Object>();
+        response.put("commodities", commodities.values());
+        return new ResponseEntity(response, HttpStatus.OK);
     }
 }
