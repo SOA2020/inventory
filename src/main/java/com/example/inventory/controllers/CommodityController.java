@@ -59,16 +59,19 @@ public class CommodityController {
         String name = postInfo.getOrDefault("commodityName", null).toString();
         int price = (int)postInfo.getOrDefault("commodityPrice", -1);
         String color = postInfo.getOrDefault("commodityColor", null).toString();
-        String image = postInfo.getOrDefault("commodityImage", null).toString();
         String spec = postInfo.getOrDefault("commoditySpecification", null).toString();
         int inventory = (int)postInfo.getOrDefault("commodityInventory", -1);
         int type = (int)postInfo.getOrDefault("commodityType", -1);
         String intro = postInfo.getOrDefault("introduction", null).toString();
-        if(name == null || color == null || image == null || spec == null || intro == null
+        if(name == null || color == null || spec == null || intro == null
                 || price < 0 || inventory < 0 || type < 0){
             return new ResponseEntity<>("Bad Request", HttpStatus.BAD_REQUEST);
         }
+        String image = "commodity";
         Commodity commodity = new Commodity(name, price, color, image, spec, inventory, CommodityType.values()[type], intro);
+        commodity =  commodityRepository.save(commodity);
+        Long commodityId = commodity.getCommodityId();
+        commodity.setCommodityImage(image + commodityId.toString());
         commodity =  commodityRepository.save(commodity);
         return new ResponseEntity<>(commodity, HttpStatus.CREATED);
     }
