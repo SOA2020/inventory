@@ -29,7 +29,7 @@ public class CommodityController {
     public static final int PG_SIZE = 10;
 
     @RequestMapping(value = "/commodity", method = RequestMethod.GET)
-    public HashMap<String, Object> getCommodity(@RequestParam(defaultValue = "-1") int type , @RequestParam(defaultValue = "1") int pgNum){
+    public HashMap<String, Object> getCommodity(@RequestParam(defaultValue = "-1") int type , @RequestParam(defaultValue = "1") int pageNumber){
         List<Commodity> commodityList;
         if(type >= 0)
             commodityList = commodityRepository.findByCommodityType(CommodityType.values()[type]);
@@ -37,8 +37,8 @@ public class CommodityController {
             commodityList = (List<Commodity>) commodityRepository.findAll();
 
         int sz = commodityList.size();
-        int pgStart = (pgNum - 1) * PG_SIZE;
-        int pgEnd = pgNum * PG_SIZE;
+        int pgStart = (pageNumber - 1) * PG_SIZE;
+        int pgEnd = pageNumber * PG_SIZE;
         pgEnd = Math.min(pgEnd, sz);
         try {
             commodityList = commodityList.subList(pgStart, pgEnd);
@@ -49,7 +49,7 @@ public class CommodityController {
         HashMap<String, Object> response = new HashMap<String, Object>();
         response.put("commodities", commodityList);
         response.put("count", sz);
-        response.put("pgNum", pgNum);
+        response.put("pgNum", pageNumber);
         response.put("pgSize", PG_SIZE);
         return response;
     }
@@ -82,7 +82,17 @@ public class CommodityController {
         if(commodity == null){
             return new ResponseEntity<>("Commodity Not Found!", HttpStatus.NOT_FOUND);
         }else{
-            return new ResponseEntity<>(commodity, HttpStatus.OK);
+            HashMap<String, Object> response = new HashMap<String, Object>();
+            response.put("commodityId", commodity.getCommodityId());
+            response.put("commodityName", commodity.getCommodityName());
+            response.put("commodityPrice", commodity.getCommodityPrice());
+            response.put("commodityColor", commodity.getCommodityColor());
+            response.put("commodityImage", commodity.getCommodityImage());
+            response.put("commoditySpecification", commodity.getCommoditySpecification());
+            response.put("commodityInventory", commodity.getCommodityInventory());
+            response.put("commodityType", commodity.getCommodityType().ordinal());
+            response.put("introduction", commodity.getIntroduction());
+            return new ResponseEntity<>(response, HttpStatus.OK);
         }
     }
 
